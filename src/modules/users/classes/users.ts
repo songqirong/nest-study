@@ -9,6 +9,11 @@ export interface Photo {
   url: string;
 }
 
+export enum IStatus {
+  true,
+  false,
+}
+
 export interface ICreateUserInfo {
   username: string;
   password: string;
@@ -18,6 +23,21 @@ export interface ICreateUserInfo {
 /**
  * 获取所有用户信息
  */
+export class PhotoDto {
+  @ApiProperty({
+    description: '相片id',
+    example: 1,
+  })
+  id: number;
+
+  @ApiProperty({
+    description: '相片地址',
+    example:
+      'https://walker-markdown.oss-cn-shenzhen.aliyuncs.com/uPic/XhoY7p.png',
+  })
+  url: string;
+}
+
 export class GetUsersAllResponse {
   @ApiProperty({
     description: 'id',
@@ -45,12 +65,7 @@ export class GetUsersAllResponse {
 
   @ApiProperty({
     description: '用户照片',
-    example: [
-      {
-        id: 1,
-        url: 'https://walker-markdown.oss-cn-shenzhen.aliyuncs.com/uPic/XhoY7p.png',
-      },
-    ],
+    type: [PhotoDto],
   })
   photos: Photo[];
 }
@@ -81,16 +96,17 @@ export class createUserProperty {
 /**
  * 批量创建用户
  */
-export class createManyUserProperty {
-  @ApiProperty({
-    description: '添加的所有用户',
-    example: [
-      {
-        username: 'username',
-        password: 'password',
-        status: true,
-      },
-    ],
-  })
-  users: ICreateUserInfo[];
-}
+// export class createManyUserProperty {
+//   @ApiProperty({
+//     description: '添加的所有用户',
+//     example: [
+//       {
+//         username: 'username',
+//         password: 'password',
+//         status: true,
+//       },
+//     ],
+//     type: [createUserProperty],
+//   })
+//   users: ICreateUserInfo[];
+// }

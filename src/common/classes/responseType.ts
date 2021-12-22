@@ -1,8 +1,23 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class OkDefaultType {
+export class PaginatedDto<TData> {
   @ApiProperty({
-    example: true,
+    description: '查询总条数',
   })
-  true;
+  total: number;
+
+  @ApiProperty({
+    description: '条数',
+  })
+  limit: number;
+
+  @ApiProperty({
+    description: '跳过的条数',
+  })
+  offset: number;
+
+  @ApiProperty({
+    description: '查询列表',
+  })
+  results: TData[];
 }

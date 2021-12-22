@@ -17,8 +17,16 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, swaggerOptions);
   SwaggerModule.setup('doc', app, document, {
-    uiConfig: {
+    customSiteTitle: '前端接口文档',
+    swaggerOptions: {
       docExpansion: 'none',
+      explorer: true,
+      filter: true,
+      showRequestDuration: true,
+      syntaxHighlight: {
+        active: true,
+        theme: 'tomorrow-night',
+      },
     },
   });
 

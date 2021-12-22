@@ -1,11 +1,21 @@
-import { Body, Controller, Get, ParseBoolPipe, Post } from '@nestjs/common';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
-import { ResponseDec } from 'src/common/decorators/response.decorator';
 import {
-  createManyUserProperty,
-  createUserProperty,
-  GetUsersAllResponse,
-} from './classes/users';
+  Body,
+  Controller,
+  Dependencies,
+  Get,
+  ParseBoolPipe,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
+import { PaginatedDto } from 'src/common/classes/responseType';
+import { JwtAuthGuard } from 'src/common/guards/auth.guard';
+import {
+  ApiPaginatedResponse,
+  ResponseDec,
+} from 'src/common/decorators/response.decorator';
+import { createUserProperty, GetUsersAllResponse } from './classes/users';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -13,9 +23,10 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @ResponseDec(GetUsersAllResponse)
+  @ApiPaginatedResponse(GetUsersAllResponse)
   @Get('allUsers')
-  getUser() {
+  @UseGuards(JwtAuthGuard)
+  getUser(): Promise<PaginatedDto<GetUsersAllResponse>> {
     return this.usersService.getAllUsers();
   }
 
@@ -29,7 +40,8 @@ export class UsersController {
 
   @ResponseDec()
   @Post('create_many')
-  async createManyUser(@Body() users: createManyUserProperty) {
+  @ApiBody({ type: [createUserProperty] })
+  async createManyUser(@Body() users: createUserProperty[]) {
     await this.usersService.createManyUser(users);
     return true;
   }

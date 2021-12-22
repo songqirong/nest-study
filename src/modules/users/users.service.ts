@@ -16,7 +16,16 @@ export class UsersService {
   async getAllUsers() {
     // relations: ['photos'] 联合查询
     const u = await this.UsersRepository.find({ relations: ['photos'] });
-    return u;
+    return {
+      total: 100,
+      limit: 10,
+      offset: 0,
+      results: u,
+    };
+  }
+
+  async findOne(username) {
+    return await this.UsersRepository.findOne({ username });
   }
 
   async createUser(user): Promise<UsersEntity[]> {

@@ -16,6 +16,11 @@ import { TasksModule } from './tasks/tasks.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AudioModule } from './jobs/audio/audio.module';
 import { AblumModule } from './modules/ablum/ablum.module';
+import { HealthController } from './modules/health/health.controller';
+import { TerminusModule } from '@nestjs/terminus';
+import { HealthModule } from './modules/health/health.module';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './common/guards/auth.guard';
 @Module({
   imports: [
     ConfigModule.load(resolve(__dirname, 'config', '**/!(*d).{ts,js}')),
@@ -24,7 +29,10 @@ import { AblumModule } from './modules/ablum/ablum.module';
       useFactory: (config: ConfigService) => config.get('database'),
       inject: [ConfigService],
     }),
+    // 查看接口状态
     StatusMonitorModule.setUp(statusMonitorConfig),
+
+    // 邮件服务
     MailerModule.forRootAsync({
       useFactory: (config: ConfigService) => config.get('email'),
       inject: [ConfigService],
@@ -37,12 +45,19 @@ import { AblumModule } from './modules/ablum/ablum.module';
     PhotoModule,
     AudioModule,
     AblumModule,
+    HealthModule,
     // 定时任务
     // ScheduleModule.forRoot(),
     // TasksModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+  ],
 })
 export class AppModule {
   // 局部中间件

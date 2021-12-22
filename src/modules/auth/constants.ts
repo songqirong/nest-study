@@ -30,7 +30,3 @@ export class AuthGetUserInfoParam {
   })
   token: string;
 }
-
-export enum getEnum {
-  token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InNhZ2Rrd2d3YWQiLCJwYXNzd29yZCI6IjEyMjMyMzIiLCJpYXQiOjE2Mzk4MTExNzcsImV4cCI6MTYzOTgxMTc3N30.8sAhmgJImW90M_yzuQDcKGGf8p6rVf-jtHZenX-IVAM',
-}
