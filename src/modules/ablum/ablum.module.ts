@@ -3,6 +3,8 @@ import { AblumService } from './ablum.service';
 import { AblumController } from './ablum.controller';
 import { MulterModule } from '@nestjs/platform-express';
 import { ConfigService } from 'nestjs-config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { PhotoEntity } from 'src/entitys/photo.entity';
 
 @Module({
   imports: [
@@ -10,6 +12,7 @@ import { ConfigService } from 'nestjs-config';
       useFactory: (config: ConfigService) => config.get('file'),
       inject: [ConfigService],
     }),
+    TypeOrmModule.forFeature([PhotoEntity]),
   ],
   providers: [AblumService],
   controllers: [AblumController],

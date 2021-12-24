@@ -8,7 +8,7 @@ import {
 import { ApiTags, ApiQuery } from '@nestjs/swagger';
 import { GuardService } from './guard.service';
 import { HelloPost } from './classes/hello';
-import { made_http_exception } from 'src/utils/checkParam';
+import { check_param } from 'src/utils/checkParam';
 import { Auth } from 'src/common/decorators/auth.decorator';
 import { ResponseDec } from 'src/common/decorators/response.decorator';
 
@@ -35,7 +35,7 @@ export class GuardController {
     )
     id,
   ): string {
-    made_http_exception({ id });
+    check_param({ id });
     return this.guardService.fetch(id);
   }
 }

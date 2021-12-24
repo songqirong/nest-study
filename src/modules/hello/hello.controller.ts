@@ -22,7 +22,7 @@ import {
 } from '@nestjs/swagger';
 import { HelloService } from './hello.service';
 import { HelloPost } from './classes/hello';
-import { made_http_exception } from 'src/utils/checkParam';
+import { check_param } from 'src/utils/checkParam';
 // import { ParseIntPipe } from 'src/common/pipes/parse-int.pipe';
 
 @ApiBearerAuth()
@@ -49,8 +49,7 @@ export class HelloController {
     )
     id,
   ): string {
-    console.log(typeof id, 'id');
-    made_http_exception({ id });
+    check_param({ id });
     return this.helloService.fetch(id);
   }
 

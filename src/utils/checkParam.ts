@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
-export const made_http_exception = (obj: Record<string, any>) => {
+export const check_param = (obj: Record<string, any>) => {
   for (const key in obj) {
     if (!obj[key]) {
       throw new HttpException(
@@ -14,7 +14,11 @@ export const made_http_exception = (obj: Record<string, any>) => {
   }
 };
 
-export const made_http_exception_obj = ({ httpStatus, message, error }) => {
+export const made_http_exception_obj = (
+  message,
+  error,
+  httpStatus = HttpStatus.BAD_REQUEST,
+) => {
   throw new HttpException(
     {
       message,

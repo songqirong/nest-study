@@ -4,10 +4,11 @@ import { Strategy, ExtractJwt } from 'passport-jwt';
 import { cookiesParse } from 'src/utils/base';
 import { ACCESS_TOKEN_SECRET } from 'src/utils/constants';
 import { Request } from 'express';
+import { AuthService } from '../auth.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  constructor(private readonly authService: AuthService) {
     super({
       jwtFromRequest: (req: Request) => {
         const cookies = ExtractJwt.fromHeader('cookie')(req);
@@ -19,6 +20,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    return { username: payload.username, password: payload.password };
+    const user = { username: payload.username, password: payload.password };
+    await this.authService.validateUser(user.username, user.password);
+    return user;
   }
 }

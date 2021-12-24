@@ -7,7 +7,6 @@ import { StatusMonitorModule } from 'nest-status-monitor';
 import { statusMonitorConfig } from './config/statusMonitor';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
-import { PhotoModule } from './modules/photo/photo.module';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
@@ -42,7 +41,6 @@ import { JwtAuthGuard } from './common/guards/auth.guard';
     EmailModule,
     AuthModule,
     UsersModule,
-    PhotoModule,
     AudioModule,
     AblumModule,
     HealthModule,

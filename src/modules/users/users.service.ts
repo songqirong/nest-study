@@ -32,11 +32,7 @@ export class UsersService {
     const { username } = user;
     const u = await getRepository(UsersEntity).find({ where: { username } });
     if (u.length > 0) {
-      made_http_exception_obj({
-        httpStatus: HttpStatus.BAD_REQUEST,
-        message: 'username must be unique',
-        error: 'USER_HAS_ALEXIST',
-      });
+      made_http_exception_obj('用户已存在', 'username has exist');
     }
     return await this.UsersRepository.save(user);
   }

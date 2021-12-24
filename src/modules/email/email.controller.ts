@@ -7,7 +7,7 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { made_http_exception } from 'src/utils/checkParam';
+import { check_param } from 'src/utils/checkParam';
 import { EmailPost } from './classes/email';
 import { EmailService } from './email.service';
 
@@ -23,7 +23,7 @@ export class EmailController {
   @ApiBody({ type: EmailPost })
   @Post()
   sendEmail(@Body() data: EmailPost): string {
-    made_http_exception({ email: data.email });
+    check_param({ email: data.email });
     return this.emailService.sendEmail(data);
   }
 }

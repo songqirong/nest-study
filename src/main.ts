@@ -4,6 +4,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { LoggerMiddlewareFun } from './common/middleware/logger.middleware';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { ParseBoolPipe } from '@nestjs/common';
+import { join } from 'path';
+import { static as express_static } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -29,6 +31,10 @@ async function bootstrap() {
       },
     },
   });
+
+  // 访问内部资源
+  const rootDir = join(__dirname, '../');
+  app.use('/static', express_static(join(rootDir, 'dist/static')));
 
   // 全局中间件
   app.use(LoggerMiddlewareFun);

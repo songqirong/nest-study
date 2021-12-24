@@ -1,7 +1,8 @@
-import { Dependencies, Injectable } from '@nestjs/common';
+import { Dependencies, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import { getCookieValue } from 'src/utils/base';
+import { made_http_exception_obj } from 'src/utils/checkParam';
 import { COOKIE_NAME } from 'src/utils/constants';
 import { UsersService } from '../users/users.service';
 @Injectable()
@@ -12,14 +13,10 @@ export class AuthService {
   ) {}
 
   async validateUser(username: string, pass: string): Promise<any> {
-    // const user = { name: 'walker123', password: '123321' };
     const user = await this.usersService.findOne(username);
-    if (user && user.password === pass) {
-      // 验证通过
-      return true;
-    }
-    // 验证失败
-    return false;
+    !user && made_http_exception_obj('用户不存在', 'user is not exist');
+    user.password !== pass &&
+      made_http_exception_obj('输入密码错误', 'password is error');
   }
 
   login(user: any, res: Response): any {

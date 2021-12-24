@@ -1,15 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export const jwtConstants = {
-  secret: 'secretKey',
-};
-
-export class AuthResponse {
-  @ApiProperty({ description: 'token', example: 'jwtToken' })
-  access_token: string;
-}
-
-export class AuthLoginBodyParam {
+export class AuthLoginBodyParamDto {
   @ApiProperty({
     description: '用户名',
     example: 'lixin',
@@ -21,12 +12,4 @@ export class AuthLoginBodyParam {
     example: '123123',
   })
   password: string;
-}
-
-export class AuthGetUserInfoParam {
-  @ApiProperty({
-    description: 'token',
-    example: 'token',
-  })
-  token: string;
 }

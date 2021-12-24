@@ -7,7 +7,7 @@ export class PhotoEntity {
   id: number;
 
   @ManyToOne(() => UsersEntity, (user) => user.photos)
-  userId: UsersEntity;
+  userId: number;
 
   @Column({ type: 'varchar', length: 80 })
   url: string;
