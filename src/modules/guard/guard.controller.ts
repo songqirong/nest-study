@@ -7,10 +7,10 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiQuery } from '@nestjs/swagger';
 import { GuardService } from './guard.service';
-import { HelloPost } from './classes/hello';
 import { check_param } from 'src/utils/checkParam';
 import { Auth } from 'src/common/decorators/auth.decorator';
 import { ResponseDec } from 'src/common/decorators/response.decorator';
+import { GuardPostDto } from './constants';
 
 @ApiTags('测试守卫')
 @Controller('/guard')
@@ -24,9 +24,9 @@ export class GuardController {
    * @UseFilters(new HttpExceptionFilter()) 局部异常过滤器
    */
 
-  @ApiQuery({ type: HelloPost })
+  @ApiQuery({ type: GuardPostDto })
   @Auth('Admin')
-  @ResponseDec(HelloPost)
+  @ResponseDec(GuardPostDto)
   @Get()
   fetch(
     @Query(

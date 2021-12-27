@@ -1,6 +1,6 @@
 import { applyDecorators, SetMetadata, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiUnauthorizedResponse } from '@nestjs/swagger';
-import { Role } from 'src/modules/guard/classes/hello';
+import { Role } from 'src/modules/guard/constants';
 import { RolesGuard } from '../guards/roles.guard';
 
 export const Auth = (...roles: Role[]) => {

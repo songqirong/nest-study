@@ -1,12 +1,6 @@
-import {
-  Column,
-  Entity,
-  OneToMany,
-  PrimaryColumn,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-import { PhotoEntity } from './photo.entity';
-import { Photo } from 'src/modules/users/classes/users';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { PhotoEntity } from './photos.entity';
+import { Photo } from 'src/modules/users/constants';
 
 @Entity({ name: 'users' })
 export class UsersEntity {

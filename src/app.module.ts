@@ -14,12 +14,13 @@ import { AppService } from './app.service';
 import { TasksModule } from './tasks/tasks.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AudioModule } from './jobs/audio/audio.module';
-import { AblumModule } from './modules/ablum/ablum.module';
 import { HealthController } from './modules/health/health.controller';
 import { TerminusModule } from '@nestjs/terminus';
 import { HealthModule } from './modules/health/health.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './common/guards/auth.guard';
+import { FileModule } from './modules/file/file.module';
+import { ImagesModule } from './modules/images/images.module';
 @Module({
   imports: [
     ConfigModule.load(resolve(__dirname, 'config', '**/!(*d).{ts,js}')),
@@ -42,8 +43,9 @@ import { JwtAuthGuard } from './common/guards/auth.guard';
     AuthModule,
     UsersModule,
     AudioModule,
-    AblumModule,
     HealthModule,
+    FileModule,
+    ImagesModule,
     // 定时任务
     // ScheduleModule.forRoot(),
     // TasksModule,

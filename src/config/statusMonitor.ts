@@ -3,7 +3,7 @@ export const statusMonitorConfig: StatusMonitorConfiguration = {
   pageTitle: 'Nest.js Monitoring page',
   port: 3000,
   path: 'status',
-  ignoreStartsWith: '/healt/alive',
+  ignoreStartsWith: '/health/alive',
   spans: [
     {
       interval: 1, // Every second
@@ -26,5 +26,18 @@ export const statusMonitorConfig: StatusMonitorConfiguration = {
     rps: true,
     statusCodes: true,
   },
-  healthChecks: [],
+  healthChecks: [
+    {
+      protocol: 'http',
+      host: 'localhost',
+      path: '/health/nestjs',
+      port: 3000,
+    },
+    {
+      protocol: 'http',
+      host: 'localhost',
+      path: '/health/typeorm',
+      port: 3000,
+    },
+  ],
 };

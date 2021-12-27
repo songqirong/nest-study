@@ -15,13 +15,11 @@ import {
   ApiTags,
   ApiQuery,
   ApiParam,
-  ApiResponse,
-  ApiResponseOptions,
   ApiOkResponse,
   ApiBadRequestResponse,
 } from '@nestjs/swagger';
 import { HelloService } from './hello.service';
-import { HelloPost } from './classes/hello';
+import { HelloPostDto } from './constants';
 import { check_param } from 'src/utils/checkParam';
 // import { ParseIntPipe } from 'src/common/pipes/parse-int.pipe';
 
@@ -40,7 +38,7 @@ export class HelloController {
 
   @Get()
   @ApiQuery({ name: 'id', required: true })
-  @ApiOkResponse({ description: 'ok', type: HelloPost })
+  @ApiOkResponse({ description: 'ok', type: HelloPostDto })
   @ApiBadRequestResponse({ description: 'bad request' })
   fetch(
     @Query(
@@ -59,7 +57,7 @@ export class HelloController {
    * @returns
    */
   @Post()
-  save(@Body() { message }: HelloPost): string {
+  save(@Body() { message }: HelloPostDto): string {
     return this.helloService.save(message);
   }
 
@@ -71,7 +69,7 @@ export class HelloController {
    */
   @Patch(':id')
   @ApiParam({ name: 'id', required: true })
-  update(@Param() { id }, @Body() { message }: HelloPost): string {
+  update(@Param() { id }, @Body() { message }: HelloPostDto): string {
     return this.helloService.update(id, message);
   }
 

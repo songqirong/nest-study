@@ -7,6 +7,7 @@ import { ICookieConfigOptions, COOKIE_NAME } from './constants';
  */
 export const cookiesParse = (cookies: string) => {
   const obj = {};
+  if (!cookies) return;
   cookies.split('; ').map((item) => {
     const [key, value] = item.split('=');
     obj[key] = value;
@@ -14,6 +15,13 @@ export const cookiesParse = (cookies: string) => {
   return Reflect.get(obj, COOKIE_NAME);
 };
 
+/**
+ * 设置cookie
+ * @param key 赋值名称
+ * @param value 赋值值
+ * @param configOptions 赋值配置项
+ * @returns
+ */
 export const getCookieValue = (
   key: string,
   value: string,
@@ -25,3 +33,15 @@ export const getCookieValue = (
   }
   return str;
 };
+
+/**
+ * 数据库查询的数据过滤
+ * @param obj 要过滤的对象
+ * @returns 过滤后的对象
+ */
+export const filterFindObj = (obj: Record<string, any>) =>
+  Object.fromEntries(
+    Object.entries(obj).filter(
+      (item) => item[1] !== undefined && item[1] !== '',
+    ),
+  );

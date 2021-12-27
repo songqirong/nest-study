@@ -20,7 +20,11 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       context.getHandler(),
       context.getClass(),
     ]);
-    if (isPublic) {
+    // 健康检查或者访问根路径不需要鉴权
+    const path: string = context.switchToHttp().getRequest().path;
+    const isHealthCheck =
+      (path as string).match(/health/)?.length > 0 || path === '/';
+    if (isPublic || isHealthCheck) {
       return true;
     }
     return super.canActivate(context);

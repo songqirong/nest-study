@@ -1,11 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
 
+/**
+ * 枚举、类型
+ */
 export enum UserRole {
   Admin = 'Admin',
   User = 'User',
 }
+export type Role = 'Admin' | 'User';
 
-export class HelloPost {
+/**
+ * Dto
+ */
+export class GuardPostDto {
   @ApiProperty({
     example: 123,
     description: 'user_id',
@@ -19,5 +26,3 @@ export class HelloPost {
   })
   user: UserRole;
 }
-
-export type Role = 'Admin' | 'User';

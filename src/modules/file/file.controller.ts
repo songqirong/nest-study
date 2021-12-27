@@ -10,15 +10,9 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { AblumService } from './ablum.service';
-import { query, Response } from 'express';
-import {
-  ApiTags,
-  ApiConsumes,
-  ApiParam,
-  ApiQuery,
-  ApiBody,
-} from '@nestjs/swagger';
+import { FileService } from './file.service';
+import { Response } from 'express';
+import { ApiTags, ApiConsumes, ApiParam, ApiBody } from '@nestjs/swagger';
 import { ResponseDec } from 'src/common/decorators/response.decorator';
 import {
   FileExportDto,
@@ -27,11 +21,17 @@ import {
   FileUploadQueryDto,
 } from './classes/upload';
 import { made_http_exception_obj } from 'src/utils/checkParam';
+import { UsersService } from '../users/users.service';
+import { ImagesService } from '../images/images.service';
 
 @ApiTags('文件上传')
 @Controller('file')
-export class AblumController {
-  constructor(private readonly albumService: AblumService) {}
+export class FileController {
+  constructor(
+    private readonly fileService: FileService,
+    private readonly usersService: UsersService,
+    private readonly imagesService: ImagesService,
+  ) {}
 
   @ResponseDec()
   @Post('upload/:type')
@@ -45,7 +45,7 @@ export class AblumController {
   })
   @ApiBody({ type: FileUploadDto })
   @UseInterceptors(FileInterceptor('file'))
-  upload(
+  async upload(
     @UploadedFile() file,
     @Query() query: FileUploadQueryDto,
     @Param() { type },
@@ -53,13 +53,19 @@ export class AblumController {
     const fileUrl = `http://localhost:3000/static/${
       file.path.split('/static/')[1]
     }`;
+    const { project = 'common', user_id } = query;
     // user_id存在且type为image就是上传照片
-    if (query.user_id) {
-      if (type === 'image') {
-        this.albumService.upload(fileUrl, query.user_id);
-      } else {
-        made_http_exception_obj('文件类型应该为image', 'type must be image');
+    if (type === 'image') {
+      if (user_id) {
+        await this.usersService.upload(fileUrl, user_id);
       }
+      const now = new Date();
+      await this.imagesService.saveImage({
+        url: fileUrl,
+        dateFormat: now.toLocaleDateString(),
+        project,
+        date: parseInt((now.getTime() / 1000).toString()),
+      });
     }
     return {
       message: '上传成功',
@@ -75,7 +81,7 @@ export class AblumController {
   @ResponseDec()
   @Get('exportAll')
   async downloadAll(@Res() res: Response) {
-    const { filename, tarStream } = await this.albumService.downloadAll();
+    const { filename, tarStream } = await this.fileService.downloadAll();
     res.setHeader('Content-type', 'application/octet-stream');
     res.setHeader('Content-Disposition', `attachment;filename=${filename}`);
     tarStream.pipe(res);
@@ -89,7 +95,7 @@ export class AblumController {
   @ResponseDec()
   @Post('export')
   async download(@Res() res: Response, @Body() payload: FileExportDto) {
-    const { filename, tarStream } = await this.albumService.download(payload);
+    const { filename, tarStream } = await this.fileService.download(payload);
     res.setHeader('Content-type', 'application/octet-stream');
     res.setHeader('Content-Disposition', `attachment;filename=${filename}`);
     tarStream.pipe(res);

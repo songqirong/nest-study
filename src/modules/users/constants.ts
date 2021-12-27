@@ -38,7 +38,7 @@ export class PhotoDto {
   url: string;
 }
 
-export class GetUsersAllResponse {
+export class GetUsersAllResponseDto {
   @ApiProperty({
     description: 'id',
     example: 1234,
@@ -73,7 +73,7 @@ export class GetUsersAllResponse {
 /**
  * 创建用户
  */
-export class createUserProperty {
+export class createUserPropertyDto {
   @ApiProperty({
     description: '用户名称',
     example: 'lixin',
@@ -94,19 +94,16 @@ export class createUserProperty {
 }
 
 /**
- * 批量创建用户
+ * 查询照片
  */
-// export class createManyUserProperty {
-//   @ApiProperty({
-//     description: '添加的所有用户',
-//     example: [
-//       {
-//         username: 'username',
-//         password: 'password',
-//         status: true,
-//       },
-//     ],
-//     type: [createUserProperty],
-//   })
-//   users: ICreateUserInfo[];
-// }
+
+export class AlbumResponseDto {
+  @ApiProperty({ description: '照片id', example: 1 })
+  id: number;
+
+  @ApiProperty({ description: '照片url', example: 'https://baidu.cn' })
+  url: string;
+
+  @ApiProperty({ description: '照片所属用户id', example: 1 })
+  userId: number;
+}
