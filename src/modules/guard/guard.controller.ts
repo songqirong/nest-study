@@ -25,7 +25,7 @@ export class GuardController {
    */
 
   @ApiQuery({ type: GuardPostDto })
-  @Auth('Admin')
+  @Auth('admin')
   @ResponseDec(GuardPostDto)
   @Get()
   fetch(

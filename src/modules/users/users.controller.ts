@@ -23,6 +23,7 @@ import {
 } from './constants';
 import { UsersService } from './users.service';
 import { Public } from 'src/common/decorators/public.decorator';
+import { Roles } from 'src/common/decorators/roles.decorator';
 
 @Controller('users')
 @ApiTags('用户信息')
@@ -34,8 +35,8 @@ export class UsersController {
    * @returns 获取所有用户
    */
   @ApiPaginatedResponse(GetUsersAllResponseDto)
+  @Roles('admin')
   @Get('allUsers')
-  @UseGuards(JwtAuthGuard)
   getUser(): Promise<PaginatedDto<GetUsersAllResponseDto>> {
     return this.usersService.getAllUsers();
   }

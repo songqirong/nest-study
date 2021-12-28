@@ -3,7 +3,9 @@
  */
 
 // 装饰器常量
-export const IS_PUBLIC_KEY = 'isPublic';
+export const IS_PUBLIC_KEY = 'is_public';
+
+export const ROLES_KEY = 'roles_key';
 
 // token相关常量
 export const COOKIE_NAME = 'persion_token';

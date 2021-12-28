@@ -6,7 +6,9 @@ import {
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { Observable } from 'rxjs';
-import { IS_PUBLIC_KEY } from 'src/utils/constants';
+import { Role } from 'src/modules/guard/constants';
+import { made_http_exception_obj } from 'src/utils/checkParam';
+import { ROLES_KEY, IS_PUBLIC_KEY } from 'src/utils/constants';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -37,8 +39,16 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     context: any,
     status?: any,
   ): TUser {
-    if (err || !user) {
-      throw err || new UnauthorizedException();
+    // 是否必须管理员才能打开
+    const roles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    if (err || (roles && !roles.includes(user.role))) {
+      throw (
+        err ||
+        made_http_exception_obj('用户权限不足', 'user Insufficient permissions')
+      );
     }
     return user;
   }

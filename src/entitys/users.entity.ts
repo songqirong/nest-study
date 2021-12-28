@@ -13,6 +13,9 @@ export class UsersEntity {
   @Column('varchar')
   password: string;
 
+  @Column('varchar')
+  role: string;
+
   @Column()
   status: boolean;
 

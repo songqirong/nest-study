@@ -4,10 +4,10 @@ import { ApiProperty } from '@nestjs/swagger';
  * 枚举、类型
  */
 export enum UserRole {
-  Admin = 'Admin',
-  User = 'User',
+  Admin = 'admin',
+  User = 'user',
 }
-export type Role = 'Admin' | 'User';
+export type Role = 'admin' | 'user';
 
 /**
  * Dto

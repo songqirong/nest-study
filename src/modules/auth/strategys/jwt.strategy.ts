@@ -19,9 +19,15 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
+  /**
+   * 检测当前token是否有效
+   * @param payload 解析token获取的数据
+   * @returns
+   */
   async validate(payload: any) {
-    const user = { username: payload.username, password: payload.password };
-    await this.authService.validateUser(user.username, user.password);
-    return user;
+    return await this.authService.validateUser(
+      payload.username,
+      payload.password,
+    );
   }
 }

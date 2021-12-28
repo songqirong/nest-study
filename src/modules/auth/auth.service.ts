@@ -17,13 +17,14 @@ export class AuthService {
     !user && made_http_exception_obj('用户不存在', 'user is not exist');
     user.password !== pass &&
       made_http_exception_obj('输入密码错误', 'password is error');
+    return user;
   }
 
   login(user: any, res: Response): any {
     res.cookie(COOKIE_NAME, this.jwtService.sign(user), {
       httpOnly: true,
       maxAge: 7 * 24 * 3600 * 1000,
-      // domain: 'persion.cn',
+      domain: 'persion.cn',
       sameSite: 'none',
       // 只有https才会发送cookie
       secure: true,
