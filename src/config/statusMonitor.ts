@@ -1,7 +1,7 @@
 import { StatusMonitorConfiguration } from 'nest-status-monitor';
 export const statusMonitorConfig: StatusMonitorConfiguration = {
   pageTitle: 'Nest.js Monitoring page',
-  port: 3000,
+  port: 8099,
   path: 'status',
   ignoreStartsWith: '/health/alive',
   spans: [
@@ -31,13 +31,13 @@ export const statusMonitorConfig: StatusMonitorConfiguration = {
       protocol: 'http',
       host: 'localhost',
       path: '/health/nestjs',
-      port: 3000,
+      port: 8099,
     },
     {
-      protocol: 'http',
+      protocol: 'https',
       host: 'localhost',
       path: '/health/typeorm',
-      port: 3000,
+      port: 8099,
     },
   ],
 };
