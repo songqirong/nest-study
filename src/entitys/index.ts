@@ -1,5 +1,5 @@
 import { UsersEntity } from './users.entity';
 import { PhotoEntity } from './photos.entity';
-import { ImageEntity } from './images.entity';
+import { FileEntity } from './files.entity';
 
-export { UsersEntity, PhotoEntity, ImageEntity };
+export { UsersEntity, PhotoEntity, FileEntity };

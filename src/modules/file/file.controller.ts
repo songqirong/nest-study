@@ -13,16 +13,20 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { FileService } from './file.service';
 import { Response } from 'express';
 import { ApiTags, ApiConsumes, ApiParam, ApiBody } from '@nestjs/swagger';
-import { ResponseDec } from 'src/common/decorators/response.decorator';
+import {
+  ApiPaginatedResponse,
+  ResponseDec,
+} from 'src/common/decorators/response.decorator';
 import {
   FileExportDto,
   FileUploadDto,
   FileUploadParamEnum,
   FileUploadQueryDto,
-} from './classes/upload';
-import { made_http_exception_obj } from 'src/utils/checkParam';
+  getAllFileDto,
+  getAllFileResDto,
+} from './constants';
 import { UsersService } from '../users/users.service';
-import { ImagesService } from '../images/images.service';
+import { PaginatedDto } from 'src/common/classes/responseType';
 
 @ApiTags('文件上传')
 @Controller('file')
@@ -30,7 +34,6 @@ export class FileController {
   constructor(
     private readonly fileService: FileService,
     private readonly usersService: UsersService,
-    private readonly imagesService: ImagesService,
   ) {}
 
   @ResponseDec()
@@ -55,18 +58,18 @@ export class FileController {
     }`;
     const { project = 'common', user_id } = query;
     // user_id存在且type为image就是上传照片
-    if (type === 'image') {
-      if (user_id) {
-        await this.usersService.upload(fileUrl, user_id);
-      }
-      const now = new Date();
-      await this.imagesService.saveImage({
-        url: fileUrl,
-        dateFormat: now.toLocaleDateString(),
-        project,
-        date: parseInt((now.getTime() / 1000).toString()),
-      });
+    if (type === FileUploadParamEnum.Image && user_id) {
+      await this.usersService.upload(fileUrl, user_id);
     }
+    const now = new Date();
+    await this.fileService.saveFile({
+      url: fileUrl,
+      dateFormat: now.toLocaleDateString(),
+      project,
+      date: parseInt((now.getTime() / 1000).toString()),
+      fileType: type,
+    });
+
     return {
       message: '上传成功',
       fileUrl,
@@ -99,5 +102,18 @@ export class FileController {
     res.setHeader('Content-type', 'application/octet-stream');
     res.setHeader('Content-Disposition', `attachment;filename=${filename}`);
     tarStream.pipe(res);
+  }
+
+  /**
+   * 获取所有文件基本信息
+   * @param body
+   * @returns
+   */
+  @ApiPaginatedResponse(getAllFileResDto)
+  @Post('/getFiles')
+  async getImages(
+    @Body() body: getAllFileDto,
+  ): Promise<PaginatedDto<getAllFileResDto>> {
+    return await this.fileService.getAllFiles(body);
   }
 }

@@ -17,3 +17,10 @@ export class HelloPostDto {
   })
   message: string;
 }
+
+export class GetHelloDto {
+  @ApiProperty({
+    description: 'id',
+  })
+  id: number;
+}

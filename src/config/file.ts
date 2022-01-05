@@ -13,9 +13,9 @@ const fileConfig: MulterModuleOptions = {
     destination: (req: Request, file, cb) => {
       const path = join(
         __dirname,
-        `../static/${req.query.project ?? 'common'}/${
-          req.params.type
-        }/${new Date().toLocaleDateString().replace(/\//gm, '-')}`,
+        req.params.type === 'build'
+          ? '../static/build/ssl'
+          : `../static/${req.query.project ?? 'common'}/${req.params.type}`,
       );
       // 由于赋予destination函数，所以需自行循环创建目录，然后再通过cb去返回目录
       mkdir(path, { recursive: true }, () => {

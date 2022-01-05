@@ -20,7 +20,13 @@ export class HealthController {
   @HealthCheck()
   check() {
     return this.health.check([
-      () => this.http.pingCheck('nestjs', 'http://localhost:8099'),
+      () =>
+        this.http.pingCheck(
+          'nestjs',
+          (process.env.NODE_ENV = 'development'
+            ? 'http://localhost:8099'
+            : 'https://nest.persion.cn'),
+        ),
     ]);
   }
 

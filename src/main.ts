@@ -38,7 +38,6 @@ async function bootstrap() {
 
   // 全局中间件
   app.use(LoggerMiddlewareFun);
-
   //全局管道
   // app.useGlobalPipes(new ParseBoolPipe({  }));
 

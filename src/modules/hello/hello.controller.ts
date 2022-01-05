@@ -19,7 +19,7 @@ import {
   ApiBadRequestResponse,
 } from '@nestjs/swagger';
 import { HelloService } from './hello.service';
-import { HelloPostDto } from './constants';
+import { GetHelloDto, HelloPostDto } from './constants';
 import { check_param } from 'src/utils/checkParam';
 // import { ParseIntPipe } from 'src/common/pipes/parse-int.pipe';
 
@@ -36,10 +36,10 @@ export class HelloController {
    * @UseFilters(new HttpExceptionFilter()) 局部异常过滤器
    */
 
-  @Get()
-  @ApiQuery({ name: 'id', required: true })
+  @ApiQuery({ type: GetHelloDto })
   @ApiOkResponse({ description: 'ok', type: HelloPostDto })
   @ApiBadRequestResponse({ description: 'bad request' })
+  @Get()
   fetch(
     @Query(
       'id',

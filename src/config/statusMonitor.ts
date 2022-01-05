@@ -1,7 +1,11 @@
 import { StatusMonitorConfiguration } from 'nest-status-monitor';
+const is_dev = process.env.NODE_ENV === 'development',
+  protocol = is_dev ? 'http' : 'https',
+  port = is_dev ? 8099 : undefined,
+  host = is_dev ? 'localhost' : 'nest.persion.cn';
 export const statusMonitorConfig: StatusMonitorConfiguration = {
   pageTitle: 'Nest.js Monitoring page',
-  port: 8099,
+  port,
   path: 'status',
   ignoreStartsWith: '/health/alive',
   spans: [
@@ -28,16 +32,16 @@ export const statusMonitorConfig: StatusMonitorConfiguration = {
   },
   healthChecks: [
     {
-      protocol: 'http',
-      host: 'localhost',
+      protocol,
+      host,
       path: '/health/nestjs',
-      port: 8099,
+      port,
     },
     {
-      protocol: 'https',
-      host: 'localhost',
+      protocol,
+      host,
       path: '/health/typeorm',
-      port: 8099,
+      port,
     },
   ],
 };

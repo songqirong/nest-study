@@ -1,5 +1,6 @@
 import {
   ExecutionContext,
+  HttpStatus,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -44,6 +45,9 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       context.getHandler(),
       context.getClass(),
     ]);
+    if(!user){
+      made_http_exception_obj('登录信息已过期', 'user token has gone', HttpStatus.FORBIDDEN)
+    }
     if (err || (roles && !roles.includes(user.role))) {
       throw (
         err ||

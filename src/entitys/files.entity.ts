@@ -1,7 +1,8 @@
+import { IFileType } from 'src/modules/file/constants';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity({ name: 'images' })
-export class ImageEntity {
+@Entity({ name: 'files' })
+export class FileEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -16,4 +17,7 @@ export class ImageEntity {
 
   @Column({ type: 'integer' })
   date: number;
+
+  @Column({ type: 'varchar' })
+  fileType: IFileType;
 }
