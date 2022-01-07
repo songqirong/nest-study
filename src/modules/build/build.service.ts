@@ -132,10 +132,11 @@ export class BuildService {
           }`,
         );
       });
-      cd(this.dist_path);
       rm('-rf', 'static/build/success');
 
       if (!is_dev) {
+        // 防止pm2启动失败
+        cd('/');
         // 加入后台服务
         execSync(
           `pm2 start /usr/local/${type}/${project_name}/bin/www --name=${project_name}`,
@@ -199,11 +200,12 @@ export class BuildService {
         cd('..');
         rm('-rf', data.git_project_name);
       }
-      !is_dev && execSync(`pm2 reload ${data.project_name}`);
-      cd(this.dist_path);
+      if (!is_dev) {
+        cd('/');
+        execSync(`pm2 reload ${data.project_name}`);
+      }
     } catch (error) {
       console.log(error, 'error');
-      cd(this.dist_path);
       made_http_exception_obj(error.message, error.code || 'git forbidden');
     }
   }
