@@ -69,15 +69,15 @@ export class BuildService {
         execSync('npm i');
       }
       // 回到build
-      is_dev ? cd('../..') : cd('/usr/local/api/nest/dist/static/build');
+      cd(`${this.dist_path}/static/build`);
       /**
        * 更新json文件及生成新的conf文件
        *
        */
       // 更新template文件夹目录下的端口json文件
-      const template_json_path = is_dev
-        ? 'template/local.constant.json'
-        : 'template/constant.json';
+      const template_json_path = `template/${
+        is_dev ? 'local.constant.json' : 'constant.json'
+      }`;
       const data = readFileSync(template_json_path, 'utf-8').split(
         /\r\n|\n|\r/gm,
       );
@@ -132,7 +132,8 @@ export class BuildService {
           }`,
         );
       });
-      rm('-rf', `${this.dist_path}/static/build/success`);
+      cd(this.dist_path);
+      rm('-rf', 'static/build/success');
 
       if (!is_dev) {
         // 加入后台服务
@@ -198,7 +199,7 @@ export class BuildService {
         cd('..');
         rm('-rf', data.git_project_name);
       }
-      // !is_dev && execSync(`pm2 reload ${data.project_name}`);
+      !is_dev && execSync(`pm2 reload ${data.project_name}`);
       cd(this.dist_path);
     } catch (error) {
       console.log(error, 'error');
