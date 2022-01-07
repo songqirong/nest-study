@@ -47,9 +47,9 @@ export class BuildService {
         cd(git_project_name);
         execSync('npm i');
         execSync('npm run build');
-        mv('-f', 'dist', '../dist');
+        cp('-rf', 'dist', '../dist');
         cd('..');
-        rm('-rf', git_project_name);
+        // rm('-rf', git_project_name);
         // 更改端口号
         const wwwData = readFileSync('bin/www', 'utf-8').split(/\r\n|\n|\r/gm);
         wwwData.splice(
