@@ -47,7 +47,7 @@ export class BuildService {
         cd(git_project_name);
         execSync('npm i');
         execSync('npm run build');
-        mv('-f', 'dist', '../dist');
+        mv('-f', project_name === 'recruitment' ? 'public' : 'dist', '../dist');
         cd('..');
         rm('-rf', git_project_name);
         // 更改端口号
@@ -196,7 +196,11 @@ export class BuildService {
         cd(data.git_project_name);
         execSync('npm i');
         execSync('npm run build');
-        mv('-f', 'dist', '../dist');
+        mv(
+          '-f',
+          data.project_name === 'recruitment' ? 'public' : 'dist',
+          '../dist',
+        );
         cd('..');
         rm('-rf', data.git_project_name);
       }
