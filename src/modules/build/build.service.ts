@@ -141,10 +141,10 @@ export class BuildService {
         execSync(
           `pm2 start /usr/local/${type}/${project_name}/bin/www --name=${project_name}`,
         );
-        // 重启nest
-        execSync('pm2 reload nest');
         // 重启nginx服务
         execSync('nginx -s reload');
+        // 重启nest
+        execSync('pm2 reload nest');
       }
     } catch (error) {
       // 代码拉取失败后删除创建的文件项目
