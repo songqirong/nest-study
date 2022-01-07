@@ -63,7 +63,7 @@ export const writeConf = (jsonArray: IService[]) => {
       ? item.project_name !== 'www' &&
         arr.push('      try_files $uri $uri/ /index.html;')
       : item.project_name === 'nest' &&
-        arr.push('      proxy_connect_timeout 90;');
+        arr.push('      proxy_connect_timeout 120;');
     arr.push('    }');
     arr.push('  }');
   });
