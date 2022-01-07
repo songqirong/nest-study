@@ -21,7 +21,6 @@ import {
 import { HelloService } from './hello.service';
 import { GetHelloDto, HelloPostDto } from './constants';
 import { check_param } from 'src/utils/checkParam';
-// import { ParseIntPipe } from 'src/common/pipes/parse-int.pipe';
 
 @ApiBearerAuth()
 @ApiTags('测试')

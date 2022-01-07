@@ -36,7 +36,7 @@ export const writeConf = (jsonArray: IService[]) => {
     // 根路径
     arr.push(
       `    root         /usr/local/${item.type}/${item.project_name}/${
-        item.type === 'api' ? 'public' : 'dist'
+        item.type === 'api' || item.project_name === 'nest' ? 'public' : 'dist'
       };`,
     );
     // ssl证书配置

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { tar } from 'compressing';
+import { join } from 'path';
 import { PaginatedDto } from 'src/common/classes/responseType';
 import { FileEntity } from 'src/entitys';
 import { filterFindObj } from 'src/utils/base';
@@ -16,14 +17,16 @@ export class FileService {
   ) {}
 
   async downloadAll() {
-    const uploadDir = `${process.cwd()}/dist/static`;
+    const uploadDir = `${(join(__dirname), '../..')}/static`;
     const tarStream = new tar.Stream();
     await tarStream.addEntry(uploadDir);
     return { filename: 'static.tar', tarStream };
   }
 
   async download(Obj: IDownObj) {
-    const uploadDir = `${process.cwd()}/dist/static/${Obj.project}/${Obj.type}`;
+    const uploadDir = `${(join(__dirname), '../..')}/static/${Obj.project}/${
+      Obj.type
+    }`;
     const tarStream = new tar.Stream();
     await tarStream.addEntry(uploadDir);
     return { filename: `${Obj.project}-${Obj.type}.tar`, tarStream };

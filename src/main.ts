@@ -3,7 +3,6 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { LoggerMiddlewareFun } from './common/middleware/logger.middleware';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
-import { ParseBoolPipe } from '@nestjs/common';
 import { join } from 'path';
 import { static as express_static } from 'express';
 
@@ -33,14 +32,11 @@ async function bootstrap() {
   });
 
   // 访问内部资源
-  const rootDir = join(__dirname, '../');
-  app.use('/static', express_static(join(rootDir, 'dist/static')));
-
+  app.use('/static', express_static(join(__dirname, 'static')));
   // 全局中间件
   app.use(LoggerMiddlewareFun);
   //全局管道
   // app.useGlobalPipes(new ParseBoolPipe({  }));
-
   // 全局异常过滤器
   app.useGlobalFilters(new HttpExceptionFilter());
 

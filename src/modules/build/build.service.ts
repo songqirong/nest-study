@@ -1,13 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { made_http_exception_obj } from 'src/utils/checkParam';
-import { pwd, exec, which, mv, cp, cd, ls, rm, find } from 'shelljs';
+import { exec, which, mv, cp, cd, ls, rm, find } from 'shelljs';
 import { mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { buildProjectPostDto, services, updateProjectDto } from './constant';
 import { joinWhite, writeConf } from 'src/utils/fileOprate';
 import { execSync } from 'child_process';
+import { join } from 'path';
 const is_dev = process.env.CURRENT_ENV === 'development';
 @Injectable()
 export class BuildService {
+  dist_path: any;
+  constructor() {
+    // 存储dist路径
+    this.dist_path = join(__dirname, '../..');
+  }
   buildProject(body: buildProjectPostDto) {
     const {
       ssl_url,
@@ -17,14 +23,12 @@ export class BuildService {
       git_project_address,
       git_project_name,
     } = body;
-    // 存储nest路径
-    const nest_path = pwd();
     try {
       if (!which('git')) {
         execSync('nvm use v16');
       }
       // 进入静态文件
-      cd(pwd() + '/dist/static/build');
+      cd(`${this.dist_path}/static/build`);
       if (find('success').stderr !== null) {
         mkdirSync('success');
       }
@@ -128,9 +132,7 @@ export class BuildService {
           }`,
         );
       });
-
-      cd('../../../..');
-      rm('-rf', 'dist/static/build/success');
+      rm('-rf', `${this.dist_path}/static/build/success`);
 
       if (!is_dev) {
         // 加入后台服务
@@ -148,19 +150,17 @@ export class BuildService {
         rm(
           '-rf',
           is_dev
-            ? `dist/success/${project_name}`
+            ? `${this.dist_path}/static/build/success/${project_name}`
             : `/usr/local/${type}/${project_name}`,
         );
       }
-      cd(nest_path);
-      rm('-rf', 'dist/static/build/success');
+      rm('-rf', `${this.dist_path}/static/build/success`);
       made_http_exception_obj(error.message, error.code || 'git forbidden');
     }
     return true;
   }
 
   updateProject(params: updateProjectDto) {
-    const init_path = pwd();
     try {
       if (!which('git')) {
         execSync('nvm use v16');
@@ -168,7 +168,7 @@ export class BuildService {
       const { project } = params;
       const data = services.filter((item) => item.project_name === project)[0];
       const project_path = is_dev
-        ? init_path + '/dist/static/build/success'
+        ? `${this.dist_path}/static/build/success`
         : `/usr/local/${data.type}`;
       cd(project_path);
       if (data.type === 'api') {
@@ -199,10 +199,10 @@ export class BuildService {
         rm('-rf', data.git_project_name);
       }
       // !is_dev && execSync(`pm2 reload ${data.project_name}`);
-      cd(init_path);
+      cd(this.dist_path);
     } catch (error) {
       console.log(error, 'error');
-      cd(init_path);
+      cd(this.dist_path);
       made_http_exception_obj(error.message, error.code || 'git forbidden');
     }
   }

@@ -1,13 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { readFileSync } from 'fs';
-import { pwd } from 'shelljs';
+import { join } from 'path';
 const is_dev = process.env.CURRENT_ENV === 'development';
 export const services: IService[] = JSON.parse(
   readFileSync(
-    pwd() +
-      `/dist/static/build/template/${
-        is_dev ? 'local.constant.json' : 'constant.json'
-      }`,
+    `${join(__dirname, '../..')}/static/build/template/${
+      is_dev ? 'local.constant.json' : 'constant.json'
+    }`,
     'utf-8',
   ),
 ).services;
