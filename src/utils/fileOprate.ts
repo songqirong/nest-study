@@ -59,11 +59,9 @@ export const writeConf = (jsonArray: IService[]) => {
       '      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;',
     );
     // 解决单页面应用跳转404问题
-    item.type === 'website'
-      ? item.project_name !== 'www' &&
-        arr.push('      try_files $uri $uri/ /index.html;')
-      : item.project_name === 'nest' &&
-        arr.push('      proxy_connect_timeout 120;');
+    item.type === 'website' &&
+      item.project_name !== 'www' &&
+      arr.push('      try_files $uri $uri/ /index.html;');
     arr.push('    }');
     arr.push('  }');
   });
