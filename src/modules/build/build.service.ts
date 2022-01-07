@@ -47,7 +47,7 @@ export class BuildService {
         cd(git_project_name);
         execSync('npm i');
         execSync('npm run build');
-        mv('-f', project_name === 'recruitment' ? 'public' : 'dist', '../dist');
+        mv('-f', 'dist', '../dist');
         cd('..');
         rm('-rf', git_project_name);
         // 更改端口号
@@ -148,14 +148,12 @@ export class BuildService {
       }
     } catch (error) {
       // 代码拉取失败后删除创建的文件项目
-      if (!error.code && error.message.search('git clone') !== -1) {
-        rm(
-          '-rf',
-          is_dev
-            ? `${this.dist_path}/static/build/success/${project_name}`
-            : `/usr/local/${type}/${project_name}`,
-        );
-      }
+      rm(
+        '-rf',
+        is_dev
+          ? `${this.dist_path}/static/build/success/${project_name}`
+          : `/usr/local/${type}/${project_name}`,
+      );
       rm('-rf', `${this.dist_path}/static/build/success`);
       made_http_exception_obj(error.message, error.code || 'git forbidden');
     }
@@ -196,11 +194,7 @@ export class BuildService {
         cd(data.git_project_name);
         execSync('npm i');
         execSync('npm run build');
-        mv(
-          '-f',
-          data.project_name === 'recruitment' ? 'public' : 'dist',
-          '../dist',
-        );
+        mv('-f', 'dist', '../dist');
         cd('..');
         rm('-rf', data.git_project_name);
       }
