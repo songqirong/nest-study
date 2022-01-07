@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { made_http_exception_obj } from 'src/utils/checkParam';
-import { pwd, exec, find, cat, which, mv, cp, cd, ls, rm, exit } from 'shelljs';
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'fs';
-import { buildProjectPostDto } from './constant';
-import { joinWhite, writeConf } from 'src/utils/fileOPrate';
+import { pwd, exec, which, mv, cp, cd, ls, rm, find } from 'shelljs';
+import { mkdirSync, readFileSync, writeFileSync } from 'fs';
+import { buildProjectPostDto, services, updateProjectDto } from './constant';
+import { joinWhite, writeConf } from 'src/utils/fileOprate';
 import { execSync } from 'child_process';
+const is_dev = process.env.CURRENT_ENV === 'development';
 @Injectable()
 export class BuildService {
   buildProject(body: buildProjectPostDto) {
@@ -16,27 +17,81 @@ export class BuildService {
       git_project_address,
       git_project_name,
     } = body;
+    // 存储nest路径
+    const nest_path = pwd();
     try {
-      const is_dev = process.env.NODE_ENV === 'development';
       if (!which('git')) {
-        execSync('nvm use v14');
+        execSync('nvm use v16');
       }
       // 进入静态文件
       cd(pwd() + '/dist/static/build');
-      mkdirSync('success');
+      if (find('success').stderr !== null) {
+        mkdirSync('success');
+      }
 
+      /**
+       * 拉取文件代码
+       */
+      if (type === 'website') {
+        // 移位文件并重启服务
+        const project_to_path = is_dev
+          ? `success/${project_name}`
+          : `/usr/local/${type}/${project_name}`;
+        cp('-rf', 'template/web', project_to_path);
+        cd(project_to_path);
+        execSync(`git clone ${git_project_address}`);
+        cd(git_project_name);
+        execSync('npm i');
+        execSync('npm run build');
+        mv('-f', 'dist', '../dist');
+        cd('..');
+        rm('-rf', git_project_name);
+        // 更改端口号
+        const wwwData = readFileSync('bin/www', 'utf-8').split(/\r\n|\n|\r/gm);
+        wwwData.splice(
+          14,
+          1,
+          `var port = normalizePort(process.env.PORT || ${port});`,
+        );
+        writeFileSync('bin/www', wwwData.join('\r\n'));
+        execSync('npm i');
+      } else {
+        const project_to_path = is_dev ? 'success' : `/usr/local/${type}`;
+        cd(project_to_path);
+        execSync(`git clone ${git_project_address}`);
+        // 改名
+        mv('-f', git_project_name, project_name);
+        cd(project_name);
+        execSync('npm i');
+      }
+      // 回到build
+      is_dev ? cd('../..') : cd('/usr/local/api/nest/dist/static/build');
       /**
        * 更新json文件及生成新的conf文件
        *
        */
       // 更新template文件夹目录下的端口json文件
-      const data = readFileSync('template/constant.json', 'utf-8').split(
+      const template_json_path = is_dev
+        ? 'template/local.constant.json'
+        : 'template/constant.json';
+      const data = readFileSync(template_json_path, 'utf-8').split(
         /\r\n|\n|\r/gm,
       );
-      data.splice(-3, 1, ...joinWhite({ project_name, type, port }));
+      data.splice(
+        -3,
+        1,
+        ...joinWhite({
+          project_name,
+          type,
+          git_project_address,
+          git_project_name,
+          ssl_url,
+          port,
+        }),
+      );
       const writeData = data.join('\r\n');
       // 写入json文件
-      writeFileSync('template/constant.json', writeData);
+      writeFileSync(template_json_path, writeData);
       // 生成要插入的数据
       const writeConfData = writeConf(JSON.parse(writeData).services);
       // 读取模版文件
@@ -44,7 +99,7 @@ export class BuildService {
         /\r\n|\n|\r/gm,
       );
       // 数据合并
-      confData.splice(-2, 0, ...writeConfData);
+      confData.splice(-1, 0, ...writeConfData);
       // 输出文件
       writeFileSync(
         is_dev ? 'success/nginx.conf' : '/etc/nginx/nginx.conf',
@@ -73,50 +128,82 @@ export class BuildService {
           }`,
         );
       });
-      // 回到build
-      cd('..');
-      if (type === 'website') {
-        // 移位文件并重启服务
-        const project_to_path = is_dev
-          ? 'success/web'
-          : `/usr/local/${type}/${project_name}`;
-        cp('-rf', 'template/web', project_to_path);
-        cd(project_to_path);
-        execSync(`git clone ${git_project_address}`);
-        cd(git_project_name);
-        execSync('npm i');
-        exec('npm run build');
-        mv('-f', './dist', '../');
-        cd('..');
-        rm('-rf', git_project_name);
-        // 更改端口号
-        const wwwData = readFileSync('bin/www', 'utf-8').split(/\r\n|\n|\r/gm);
-        wwwData.splice(
-          14,
-          1,
-          `var port = normalizePort(process.env.PORT || ${port});`,
-        );
-        writeFileSync('bin/www', wwwData.join('\r\n'));
-        execSync('npm i');
-      } else {
-        const project_to_path = is_dev ? 'success' : `usr/local/${type}`;
-        cd(project_to_path);
-        execSync(`git clone ${git_project_address}`);
-        // 改名
-        mv('-f', git_project_name, project_name);
-        cd(project_name);
-        execSync('npm i');
-      }
+
+      cd('../../../..');
+      rm('-rf', 'dist/static/build/success');
 
       if (!is_dev) {
         // 加入后台服务
-        execSync(`pm2 start bin/www --name=${project_name}`);
+        execSync(
+          `pm2 start /usr/local/${type}/${project_name}/bin/www --name=${project_name}`,
+        );
+        // 重启nest
+        execSync('pm2 reload nest');
         // 重启nginx服务
         execSync('nginx -s reload');
       }
     } catch (error) {
-      console.log(error.message, 'error');
+      // 代码拉取失败后删除创建的文件项目
+      if (!error.code && error.message.search('git clone') !== -1) {
+        rm(
+          '-rf',
+          is_dev
+            ? `dist/success/${project_name}`
+            : `/usr/local/${type}/${project_name}`,
+        );
+      }
+      cd(nest_path);
+      rm('-rf', 'dist/static/build/success');
+      made_http_exception_obj(error.message, error.code || 'git forbidden');
     }
     return true;
+  }
+
+  updateProject(params: updateProjectDto) {
+    const init_path = pwd();
+    try {
+      if (!which('git')) {
+        execSync('nvm use v16');
+      }
+      const { project } = params;
+      const data = services.filter((item) => item.project_name === project)[0];
+      const project_path = is_dev
+        ? init_path + '/dist/static/build/success'
+        : `/usr/local/${data.type}`;
+      cd(project_path);
+      if (data.type === 'api') {
+        // 保留静态文件
+        const resource_path =
+            data.project_name === 'nest' ? 'dist/static' : 'public',
+          static_mv_path = `${data.project_name}/${resource_path}`;
+        mv('-f', static_mv_path, 'public');
+        rm('-rf', data.project_name);
+        execSync(`git clone ${data.git_project_address}`);
+        // 改名
+        mv('-f', data.git_project_name, data.project_name);
+        cd(data.project_name);
+        execSync('npm i');
+        data.project_name === 'nest' && execSync('npm run build');
+        cd('..');
+        // 移入静态文件;
+        mv('-f', 'public', static_mv_path);
+      } else {
+        cd(data.project_name);
+        rm('-rf', 'dist');
+        execSync(`git clone ${data.git_project_address}`);
+        cd(data.git_project_name);
+        execSync('npm i');
+        execSync('npm run build');
+        mv('-f', 'dist', '../dist');
+        cd('..');
+        rm('-rf', data.git_project_name);
+      }
+      // !is_dev && execSync(`pm2 reload ${data.project_name}`);
+      cd(init_path);
+    } catch (error) {
+      console.log(error, 'error');
+      cd(init_path);
+      made_http_exception_obj(error.message, error.code || 'git forbidden');
+    }
   }
 }

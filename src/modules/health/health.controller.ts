@@ -23,7 +23,7 @@ export class HealthController {
       () =>
         this.http.pingCheck(
           'nestjs',
-          (process.env.NODE_ENV = 'development'
+          (process.env.CURRENT_ENV = 'development'
             ? 'http://localhost:8099'
             : 'https://nest.persion.cn'),
         ),

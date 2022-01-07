@@ -53,9 +53,11 @@ export class FileController {
     @Query() query: FileUploadQueryDto,
     @Param() { type },
   ) {
-    const fileUrl = `http://localhost:3000/static/${
-      file.path.split('/static/')[1]
-    }`;
+    const fileUrl = `${
+      process.env.CURRENT_ENV === 'development'
+        ? 'http://localhost:3000'
+        : 'https://nest.persion.cn'
+    }/static/${file.path.split('/static/')[1]}`;
     const { project = 'common', user_id } = query;
     // user_id存在且type为image就是上传照片
     if (type === FileUploadParamEnum.Image && user_id) {

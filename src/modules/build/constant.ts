@@ -1,4 +1,23 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { readFileSync } from 'fs';
+import { pwd } from 'shelljs';
+const is_dev = process.env.CURRENT_ENV === 'development';
+export const services: IService[] = JSON.parse(
+  readFileSync(
+    pwd() +
+      `/dist/static/build/template/${
+        is_dev ? 'local.constant.json' : 'constant.json'
+      }`,
+    'utf-8',
+  ),
+).services;
+function getServicesEnum() {
+  const obj = {};
+  services.map((item) => {
+    obj[item.project_name.toUpperCase()] = item.project_name;
+  });
+  return obj;
+}
 
 /**
  * 类型
@@ -7,12 +26,17 @@ export type IService = {
   port: number;
   project_name: string;
   type: Itype;
+  git_project_address: string;
+  git_project_name: string;
+  ssl_url: string;
 };
 
 export enum TypeEnum {
   Api = 'api',
   Website = 'website',
 }
+
+export const ServicesEnum = getServicesEnum();
 
 export type Itype = 'api' | 'website';
 
@@ -53,4 +77,13 @@ export class buildProjectPostDto {
     default: TypeEnum.Website,
   })
   type: Itype;
+}
+
+export class updateProjectDto {
+  @ApiProperty({
+    description: '更新的项目',
+    enum: ServicesEnum,
+    default: 'shop',
+  })
+  project: string;
 }
