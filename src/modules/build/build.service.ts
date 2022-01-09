@@ -52,7 +52,8 @@ export class BuildService {
     try {
       // 进入静态文件
       cd(`${this.dist_path}/static/build`);
-      is_dev && rm('-rf', 'success') && mkdirSync('success');
+      is_dev && rm('-rf', 'success');
+      mkdirSync('success');
       /**
        * 拉取文件代码
        */
