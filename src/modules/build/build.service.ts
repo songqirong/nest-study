@@ -134,7 +134,6 @@ export class BuildService {
       const filename = ssl_url.split('/ssl/')[1];
       // 复制ssl证书压缩包到指定位置
       cp(`ssl/${filename}`, 'success');
-      // 回到static目录
       cd('success');
       // 解压
       exec(`unzip -o ${filename}`);
@@ -152,9 +151,9 @@ export class BuildService {
       });
 
       if (!is_dev) {
-        rm('-rf', 'static/build/success');
         // 防止pm2启动失败
         cd('/');
+        rm('-rf', '/usr/local/api/nest/dist/static/build/success');
         // 加入后台服务
         execSync(
           `pm2 start /usr/local/${type}/${project_name}/bin/www --name=${project_name}`,
@@ -166,14 +165,9 @@ export class BuildService {
       }
     } catch (error) {
       // 代码拉取失败后删除创建的文件项目
-      rm(
-        '-rf',
-        is_dev
-          ? `${this.dist_path}/static/build/success/${project_name}`
-          : `/usr/local/${type}/${project_name}`,
-      );
+      !is_dev && rm('-rf', `/usr/local/${type}/${project_name}`);
       rm('-rf', `${this.dist_path}/static/build/success`);
-      made_http_exception_obj(error.message, error.code || 'git forbidden');
+      made_http_exception_obj(error.message, error.code);
     }
     return true;
   }
