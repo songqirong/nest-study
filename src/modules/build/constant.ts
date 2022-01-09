@@ -13,7 +13,11 @@ export const services: IService[] = JSON.parse(
 function getServicesEnum(type: 'delete' | 'update') {
   const obj = {};
   services.forEach((item) => {
-    if (type === 'delete' && item.project_name === 'nest') return;
+    if (
+      (type === 'delete' && item.project_name === 'nest') ||
+      (type === 'update' && item.project_name === 'www')
+    )
+      return;
     obj[item.project_name.toUpperCase()] = item.project_name;
   });
   return obj;
@@ -89,7 +93,7 @@ export class updateProjectDto {
   @ApiProperty({
     description: '更新的项目',
     enum: getServicesEnum('update'),
-    default: 'shop',
+    default: 'nest',
   })
   project: string;
 }
