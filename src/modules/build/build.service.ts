@@ -2,7 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { made_http_exception_obj } from 'src/utils/checkParam';
 import { exec, which, mv, cp, cd, ls, rm, find } from 'shelljs';
 import { mkdirSync, readFileSync, writeFileSync } from 'fs';
-import { buildProjectPostDto, services, updateProjectDto } from './constant';
+import {
+  BodyEnum,
+  buildProjectPostDto,
+  services,
+  updateProjectDto,
+} from './constant';
 import { joinWhite, writeConf } from 'src/utils/fileOprate';
 import { execSync } from 'child_process';
 import { join } from 'path';
@@ -10,9 +15,13 @@ const is_dev = process.env.CURRENT_ENV === 'development';
 @Injectable()
 export class BuildService {
   dist_path: any;
+  template_json_path: string;
   constructor() {
     // 存储dist路径
     this.dist_path = join(__dirname, '../..');
+    this.template_json_path = `template/${
+      is_dev ? 'local.constant.json' : 'constant.json'
+    }`;
   }
   buildProject(body: buildProjectPostDto) {
     const {
@@ -23,16 +32,30 @@ export class BuildService {
       git_project_address,
       git_project_name,
     } = body;
+    const check_body_param = {
+      ssl_url,
+      project_name,
+      port,
+      git_project_name,
+      git_project_address,
+    };
+    for (const key in check_body_param) {
+      const idx = services.findIndex(
+        (item) => item[key] === check_body_param[key],
+      );
+      idx !== -1 &&
+        made_http_exception_obj(
+          `${check_body_param[key]}已经存在`,
+          `${BodyEnum[key]} has exist`,
+        );
+    }
     try {
       if (!which('git')) {
         execSync('nvm use v16');
       }
       // 进入静态文件
       cd(`${this.dist_path}/static/build`);
-      if (find('success').stderr !== null) {
-        mkdirSync('success');
-      }
-
+      is_dev && rm('-rf', 'success') && mkdirSync('success');
       /**
        * 拉取文件代码
        */
@@ -75,10 +98,7 @@ export class BuildService {
        *
        */
       // 更新template文件夹目录下的端口json文件
-      const template_json_path = `template/${
-        is_dev ? 'local.constant.json' : 'constant.json'
-      }`;
-      const data = readFileSync(template_json_path, 'utf-8').split(
+      const data = readFileSync(this.template_json_path, 'utf-8').split(
         /\r\n|\n|\r/gm,
       );
       data.splice(
@@ -95,7 +115,7 @@ export class BuildService {
       );
       const writeData = data.join('\r\n');
       // 写入json文件
-      writeFileSync(template_json_path, writeData);
+      writeFileSync(this.template_json_path, writeData);
       // 生成要插入的数据
       const writeConfData = writeConf(JSON.parse(writeData).services);
       // 读取模版文件
@@ -132,9 +152,9 @@ export class BuildService {
           }`,
         );
       });
-      rm('-rf', 'static/build/success');
 
       if (!is_dev) {
+        rm('-rf', 'static/build/success');
         // 防止pm2启动失败
         cd('/');
         // 加入后台服务
@@ -160,13 +180,12 @@ export class BuildService {
     return true;
   }
 
-  updateProject(params: updateProjectDto) {
+  updateProject(project: string) {
     try {
       if (!which('git')) {
         execSync('nvm use v16');
       }
-      const { project } = params;
-      const data = services.filter((item) => item.project_name === project)[0];
+      const data = services.find((item) => item.project_name === project);
       const project_path = is_dev
         ? `${this.dist_path}/static/build/success`
         : `/usr/local/${data.type}`;
@@ -206,5 +225,47 @@ export class BuildService {
       console.log(error, 'error');
       made_http_exception_obj(error.message, error.code || 'git forbidden');
     }
+  }
+
+  deleteProject(project: string) {
+    cd(`${this.dist_path}/static/build`);
+    const idx = services.findIndex((item) => item.project_name === project),
+      start = idx === 0 ? 2 : 1 + 8 * idx;
+    const data = readFileSync(this.template_json_path, 'utf-8').split(
+      /\r\n|\n|\r/gm,
+    );
+    data.splice(start, 8);
+    const writeData = data.join('\r\n');
+    // 写入json文件
+    writeFileSync(this.template_json_path, writeData);
+    const rm_path = is_dev
+      ? `success/${project}`
+      : `/usr/local/${services[idx].type}/${project}`;
+    // 移除项目
+    rm('-rf', rm_path);
+    // 移除ssl证书
+    const rm_ssl_path = is_dev ? `success` : `/etc/pki/nginx`;
+    rm('-f', `${rm_ssl_path}/${project}.pem`);
+    rm('-f', `${rm_ssl_path}/${project}.key`);
+    // nginx重新生成
+    // 生成要插入的数据
+    const writeConfData = writeConf(JSON.parse(writeData).services);
+    // 读取模版文件
+    const confData = readFileSync('template/nginx.conf', 'utf-8').split(
+      /\r\n|\n|\r/gm,
+    );
+    // 数据合并
+    confData.splice(-1, 0, ...writeConfData);
+    // 输出文件
+    writeFileSync(
+      is_dev ? 'success/nginx.conf' : '/etc/nginx/nginx.conf',
+      confData.join('\r\n'),
+    );
+    if (!is_dev) {
+      execSync('nginx -s reload');
+      execSync(`pm2 delete ${project}`);
+      execSync('pm2 reload nest');
+    }
+    return true;
   }
 }

@@ -10,9 +10,10 @@ export const services: IService[] = JSON.parse(
     'utf-8',
   ),
 ).services;
-function getServicesEnum() {
+function getServicesEnum(type: 'delete' | 'update') {
   const obj = {};
-  services.map((item) => {
+  services.forEach((item) => {
+    if (type === 'delete' && item.project_name === 'nest') return;
     obj[item.project_name.toUpperCase()] = item.project_name;
   });
   return obj;
@@ -35,7 +36,13 @@ export enum TypeEnum {
   Website = 'website',
 }
 
-export const ServicesEnum = getServicesEnum();
+export enum BodyEnum {
+  port = '端口',
+  project_name = '项目名称',
+  git_project_name = 'git项目名称',
+  git_project_address = 'git项目地址',
+  ssl_url = 'ssl证书地址',
+}
 
 export type Itype = 'api' | 'website';
 
@@ -81,8 +88,17 @@ export class buildProjectPostDto {
 export class updateProjectDto {
   @ApiProperty({
     description: '更新的项目',
-    enum: ServicesEnum,
+    enum: getServicesEnum('update'),
     default: 'shop',
+  })
+  project: string;
+}
+
+export class deleteProjectDto {
+  @ApiProperty({
+    description: '删除的项目',
+    enum: getServicesEnum('delete'),
+    default: 'www',
   })
   project: string;
 }
