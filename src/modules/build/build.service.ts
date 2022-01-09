@@ -50,9 +50,6 @@ export class BuildService {
         );
     }
     try {
-      if (!which('git')) {
-        execSync('nvm use v16');
-      }
       // 进入静态文件
       cd(`${this.dist_path}/static/build`);
       is_dev && rm('-rf', 'success') && mkdirSync('success');
