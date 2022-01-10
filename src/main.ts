@@ -4,7 +4,11 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { LoggerMiddlewareFun } from './common/middleware/logger.middleware';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { join } from 'path';
-import { static as express_static } from 'express';
+import { Request, static as express_static } from 'express';
+import {
+  CorsOptions,
+  CorsOptionsCallback,
+} from '@nestjs/common/interfaces/external/cors-options.interface';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -38,7 +42,15 @@ async function bootstrap() {
   // app.useGlobalPipes(new ParseBoolPipe({  }));
   // 全局异常过滤器
   app.useGlobalFilters(new HttpExceptionFilter());
-  app.enableCors();
+  app.enableCors((req: Request, cb: CorsOptionsCallback) => {
+    const configOptions: CorsOptions = {
+      origin: req.headers.origin || '*',
+      credentials: true,
+      allowedHeaders: ['X-Requested-With', 'Authorization', 'Content-Type'],
+      methods: ['GET', 'POST', 'PATCH', 'DELETE', 'PUT', 'OPTIONS'],
+    };
+    cb(null, configOptions);
+  });
 
   await app.listen(8099);
 }
