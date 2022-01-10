@@ -14,7 +14,6 @@ async function bootstrap() {
     .setTitle('nest-starter api document') // 设置标题
     .setDescription('nest starter project api document') // 设置描述信息
     .setVersion('2.0') // 设置版本号
-    .addBearerAuth() // 鉴权
     .build();
   const document = SwaggerModule.createDocument(app, swaggerOptions);
   SwaggerModule.setup('doc', app, document, {
@@ -39,6 +38,7 @@ async function bootstrap() {
   // app.useGlobalPipes(new ParseBoolPipe({  }));
   // 全局异常过滤器
   app.useGlobalFilters(new HttpExceptionFilter());
+  app.enableCors();
 
   await app.listen(8099);
 }

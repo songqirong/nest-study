@@ -1,6 +1,6 @@
 import { StatusMonitorConfiguration } from 'nest-status-monitor';
-const is_dev = process.env.CURRENT_ENV === 'development',
-  protocol = is_dev ? 'http' : 'https',
+import { is_dev } from 'src/utils/base';
+const protocol = is_dev ? 'http' : 'https',
   port = is_dev ? 8099 : undefined,
   host = is_dev ? 'localhost' : 'nest.persion.cn';
 export const statusMonitorConfig: StatusMonitorConfiguration = {

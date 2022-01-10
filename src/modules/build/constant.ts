@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { readFileSync } from 'fs';
 import { join } from 'path';
-const is_dev = process.env.CURRENT_ENV === 'development';
+import { is_dev } from 'src/utils/base';
 export const services: IService[] = JSON.parse(
   readFileSync(
     `${join(__dirname, '../..')}/static/build/template/${

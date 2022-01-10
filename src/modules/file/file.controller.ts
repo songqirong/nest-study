@@ -27,6 +27,7 @@ import {
 } from './constants';
 import { UsersService } from '../users/users.service';
 import { PaginatedDto } from 'src/common/classes/responseType';
+import { is_dev } from 'src/utils/base';
 
 @ApiTags('文件上传')
 @Controller('file')
@@ -54,9 +55,7 @@ export class FileController {
     @Param() { type },
   ) {
     const fileUrl = `${
-      process.env.CURRENT_ENV === 'development'
-        ? 'http://localhost:3000'
-        : 'https://nest.persion.cn'
+      is_dev ? 'http://localhost:3000' : 'https://nest.persion.cn'
     }/static/${file.path.split('/static/')[1]}`;
     const { project = 'common', user_id } = query;
     // user_id存在且type为image就是上传照片

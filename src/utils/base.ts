@@ -15,6 +15,8 @@ export const cookiesParse = (cookies: string) => {
   return Reflect.get(obj, COOKIE_NAME);
 };
 
+export const is_dev = process.env.CURRENT_ENV === 'development';
+
 /**
  * 设置cookie
  * @param key 赋值名称

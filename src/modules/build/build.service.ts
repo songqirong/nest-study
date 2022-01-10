@@ -2,16 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { made_http_exception_obj } from 'src/utils/checkParam';
 import { exec, which, mv, cp, cd, ls, rm, find } from 'shelljs';
 import { mkdirSync, readFileSync, writeFileSync } from 'fs';
-import {
-  BodyEnum,
-  buildProjectPostDto,
-  services,
-  updateProjectDto,
-} from './constant';
+import { BodyEnum, buildProjectPostDto, services } from './constant';
 import { joinWhite, writeConf } from 'src/utils/fileOprate';
 import { execSync } from 'child_process';
 import { join } from 'path';
-const is_dev = process.env.CURRENT_ENV === 'development';
+import { is_dev } from 'src/utils/base';
 @Injectable()
 export class BuildService {
   dist_path: any;

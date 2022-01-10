@@ -11,7 +11,6 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import {
-  ApiBearerAuth,
   ApiTags,
   ApiQuery,
   ApiParam,
@@ -22,7 +21,6 @@ import { HelloService } from './hello.service';
 import { GetHelloDto, HelloPostDto } from './constants';
 import { check_param } from 'src/utils/checkParam';
 
-@ApiBearerAuth()
 @ApiTags('测试')
 @Controller('/hello')
 export class HelloController {
