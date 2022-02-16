@@ -19,6 +19,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './common/guards/auth.guard';
 import { FileModule } from './modules/file/file.module';
 import { BuildModule } from './modules/build/build.module';
+import { MusicModule } from './modules/music/music.module';
 @Module({
   imports: [
     ConfigModule.load(resolve(__dirname, 'config', '**/!(*d).{ts,js}')),
@@ -44,6 +45,7 @@ import { BuildModule } from './modules/build/build.module';
     HealthModule,
     FileModule,
     BuildModule,
+    MusicModule,
     // 定时任务
     // ScheduleModule.forRoot(),
     // TasksModule,

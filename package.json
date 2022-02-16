@@ -45,6 +45,7 @@
     "mysql": "^2.18.1",
     "nest-status-monitor": "^0.1.4",
     "nestjs-config": "^1.4.10",
+    "NeteaseCloudMusicApi": "^4.2.0",
     "nodemailer": "^6.7.2",
     "npm": "^8.3.0",
     "passport": "^0.5.2",

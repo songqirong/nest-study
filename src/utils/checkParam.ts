@@ -66,3 +66,16 @@ export const made_http_exception_obj = (
     httpStatus,
   );
 };
+
+/**
+ * 检验参数，省略结构的步骤
+ * @param {Record<string, any>} obj
+ * @param {string[]} arr
+ */
+export const check_param_obj = (obj: Record<string, any>, arr: string[]) => {
+  const check_obj = {};
+  for (const val of arr) {
+    check_obj[val] = obj[val];
+  }
+  check_param(check_obj);
+};
